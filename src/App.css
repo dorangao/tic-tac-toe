@@ -14,7 +14,7 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  background: radial-gradient(circle at center, #2c3e50 0%, #1a2a3a 50%, #0d1520 100%);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -26,7 +26,7 @@
   box-sizing: border-box;
 }
 
-/* Game layout for desktop */
+/* Game layout for desktop - Two-column layout */
 @media (min-width: 1024px) {
   .App-header {
     flex-direction: row;
@@ -41,22 +41,52 @@
     margin-bottom: 30px;
   }
 
+  /* Two-column layout with board taking 2/3 of the space */
+  .container {
+    display: flex;
+    width: 100%;
+    height: calc(100vh - 100px); /* Account for title */
+  }
+
+  .board-wrapper {
+    flex: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sidebar {
+    flex: 1;
+    padding: 1rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background-color: rgba(255, 255, 255, 0.03);
+    border-radius: 15px;
+    margin-left: 20px;
+    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.2);
+  }
+
   .game-main {
     flex: 0 0 auto;
-    order: 2;
-    margin: 0 20px;
+    order: 1;
+    margin: 0;
+    width: 100%;
+    max-width: 800px;
+    max-height: 800px;
   }
 
   .game-sidebar {
     flex: 0 0 300px;
-    order: 1;
-    margin-top: 50px;
+    order: 2;
+    margin-top: 0;
   }
 
   .game-sidebar-right {
     flex: 0 0 300px;
-    order: 3;
-    margin-top: 50px;
+    order: 2;
+    margin-top: 20px;
   }
 }
 
@@ -67,11 +97,29 @@
 /* Game status styles */
 .status {
   margin: 20px 0;
-  font-size: 1.5rem;
+  font-size: 2.5rem;
   font-weight: bold;
   color: #fff;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   animation: pulse 2s infinite ease-in-out;
+  text-align: center;
+  padding: 10px 20px;
+  border-radius: 10px;
+  background-color: rgba(97, 218, 251, 0.1);
+  transition: all 0.3s ease;
+}
+
+/* Winner status animation - Add this class dynamically in JavaScript */
+.winner-status {
+  color: #4CAF50;
+  animation: winner-pulse 1.5s infinite ease-in-out;
+  background-color: rgba(76, 175, 80, 0.2);
+}
+
+@keyframes winner-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
 }
 
 @keyframes pulse {
@@ -89,9 +137,12 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   margin: 20px 0;
   position: relative;
   overflow: hidden;
+  width: 100%;
+  height: 100%;
 }
 
 .game-main::before {
@@ -120,10 +171,47 @@
   letter-spacing: 2px;
 }
 
-@media (max-width: 768px) {
+/* Responsive design for tablets and mobile */
+@media (max-width: 1023px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .board-wrapper {
+    width: 100%;
+    min-height: 60vh;
+    order: 1;
+  }
+
+  .sidebar {
+    width: 100%;
+    order: 2;
+    margin-left: 0;
+    margin-top: 20px;
+  }
+
   .game-main {
     padding: 15px;
     margin: 10px 0;
+    max-width: 90vw;
+    max-height: 90vw;
+  }
+
+  .game-title {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+  }
+
+  .status {
+    font-size: 1.5rem;
+  }
+}
+
+/* Mobile specific adjustments */
+@media (max-width: 768px) {
+  .game-main {
+    padding: 10px;
+    margin: 5px 0;
   }
 
   .game-title {
@@ -465,19 +553,20 @@
 
 /* Stats board styles */
 .stats-board {
-  margin-top: 30px;
   padding: 20px;
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(97, 218, 251, 0.05);
   border-radius: 10px;
   width: 100%;
   max-width: 400px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid rgba(97, 218, 251, 0.2);
 }
 
 .stats-board:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+  background-color: rgba(97, 218, 251, 0.1);
 }
 
 /* Sidebar styles */
@@ -489,9 +578,14 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 10px 0;
   width: 100%;
   max-width: 400px;
+  border: 1px solid rgba(97, 218, 251, 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.game-sidebar:hover, .game-sidebar-right:hover {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
 }
 
 @media (max-width: 1023px) {

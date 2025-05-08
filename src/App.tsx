@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import Board from './components/Board';
+import styles from './Game.module.css';
 import { 
   createGame, 
   joinGame, 
@@ -622,166 +623,180 @@ function App() {
       <header className="App-header">
         <h1 className="game-title">Tic Tac Toe</h1>
 
-        {/* Left Sidebar - Game Controls */}
-        <div className="game-sidebar">
-          {/* Game mode selector */}
-          {gameMode !== 'online' ? (
-            <div className="game-mode-selector">
-              <button 
-                className="mode-button" 
-                onClick={toggleGameMode}
-              >
-                {vsComputer ? 'Switch to 2 Players' : 'Switch to vs Computer'}
-              </button>
-              <div className="mode-label">
-                Current Mode: {vsComputer ? 'Human vs Computer' : 'Human vs Human'}
-              </div>
-              <button 
-                className="mode-button" 
-                onClick={createOnlineGame}
-              >
-                Create Online Game
-              </button>
-              <button 
-                className="mode-button" 
-                onClick={() => setIsJoining(true)}
-              >
-                Join Online Game
-              </button>
-            </div>
-          ) : (
-            <div className="game-mode-selector">
-              <div className="mode-label">
-                Online Game Mode
-              </div>
-              {isCreator && inviteLink && (
-                <div className="invite-link-container">
+        <div className="container">
+          {/* Main area - Game Board */}
+          <div className="board-wrapper">
+            <div className="game-main">
+              {/* Join game dialog */}
+              {isJoining && (
+                <div className="join-dialog">
+                  <h3>Join Game</h3>
                   <input 
                     type="text" 
-                    value={inviteLink} 
-                    readOnly 
-                    className="invite-link"
+                    value={joinGameId} 
+                    onChange={(e) => setJoinGameId(e.target.value)}
+                    placeholder="Enter Game ID"
+                    className="join-input"
                   />
+                  <div className="join-buttons">
+                    <button 
+                      className="join-button" 
+                      onClick={() => joinOnlineGame(joinGameId)}
+                    >
+                      Join
+                    </button>
+                    <button 
+                      className="cancel-button" 
+                      onClick={() => setIsJoining(false)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Game status */}
+              <div className={`status ${
+                (gameMode === 'online' && onlineGameState?.winner) || 
+                (gameMode !== 'online' && calculateWinner(squares)) 
+                ? 'winner-status' : ''
+              }`}>
+                {gameMode === 'online' ? getOnlineStatus() : getStatus()}
+              </div>
+
+              {/* Online game info */}
+              {gameMode === 'online' && getOnlineGameInfo()}
+
+              {/* Game board */}
+              <div className={
+                (gameMode === 'online' && onlineGameState?.winner) || 
+                (gameMode !== 'online' && calculateWinner(squares)) 
+                ? styles.winner : ''
+              } style={{ width: '100%', height: '100%' }}>
+                {gameMode === 'online' && onlineGameState ? (
+                  <Board 
+                    squares={onlineGameState.squares}
+                    onClick={handleClick}
+                  />
+                ) : (
+                  <Board 
+                    squares={squares}
+                    onClick={handleClick}
+                  />
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Sidebar - Controls and Stats */}
+          <div className="sidebar">
+            {/* Game Controls */}
+            <div className="game-sidebar">
+              {/* Game mode selector */}
+              {gameMode !== 'online' ? (
+                <div className="game-mode-selector">
                   <button 
-                    className="copy-button" 
-                    onClick={copyInviteLink}
+                    className="mode-button" 
+                    onClick={toggleGameMode}
                   >
-                    {isLinkCopied ? 'Copied!' : 'Copy Link'}
+                    {vsComputer ? 'Switch to 2 Players' : 'Switch to vs Computer'}
+                  </button>
+                  <div className="mode-label">
+                    Current Mode: {vsComputer ? 'Human vs Computer' : 'Human vs Human'}
+                  </div>
+                  <button 
+                    className="mode-button" 
+                    onClick={createOnlineGame}
+                  >
+                    Create Online Game
+                  </button>
+                  <button 
+                    className="mode-button" 
+                    onClick={() => setIsJoining(true)}
+                  >
+                    Join Online Game
+                  </button>
+                </div>
+              ) : (
+                <div className="game-mode-selector">
+                  <div className="mode-label">
+                    Online Game Mode
+                  </div>
+                  {isCreator && inviteLink && (
+                    <div className="invite-link-container">
+                      <input 
+                        type="text" 
+                        value={inviteLink} 
+                        readOnly 
+                        className="invite-link"
+                      />
+                      <button 
+                        className="copy-button" 
+                        onClick={copyInviteLink}
+                      >
+                        {isLinkCopied ? 'Copied!' : 'Copy Link'}
+                      </button>
+                    </div>
+                  )}
+                  <button 
+                    className="mode-button" 
+                    onClick={() => switchToLocalMode(true)}
+                  >
+                    Exit to Local Mode
                   </button>
                 </div>
               )}
-              <button 
-                className="mode-button" 
-                onClick={() => switchToLocalMode(true)}
-              >
-                Exit to Local Mode
-              </button>
-            </div>
-          )}
 
-          {/* Game controls */}
-          {((gameMode !== 'online' && gameOver) || 
-            (gameMode === 'online' && onlineGameState?.gameOver)) && (
-            <button className="reset-button" onClick={handleResetGame}>
-              Play Again
-            </button>
-          )}
-
-          {!gameOver && gameMode !== 'online' && (
-            <button className="reset-button" onClick={handleResetGame}>
-              New Game
-            </button>
-          )}
-        </div>
-
-        {/* Main Game Area */}
-        <div className="game-main">
-          {/* Join game dialog */}
-          {isJoining && (
-            <div className="join-dialog">
-              <h3>Join Game</h3>
-              <input 
-                type="text" 
-                value={joinGameId} 
-                onChange={(e) => setJoinGameId(e.target.value)}
-                placeholder="Enter Game ID"
-                className="join-input"
-              />
-              <div className="join-buttons">
-                <button 
-                  className="join-button" 
-                  onClick={() => joinOnlineGame(joinGameId)}
-                >
-                  Join
+              {/* Game controls */}
+              {((gameMode !== 'online' && gameOver) || 
+                (gameMode === 'online' && onlineGameState?.gameOver)) && (
+                <button className="reset-button" onClick={handleResetGame}>
+                  Play Again
                 </button>
-                <button 
-                  className="cancel-button" 
-                  onClick={() => setIsJoining(false)}
-                >
-                  Cancel
+              )}
+
+              {!gameOver && gameMode !== 'online' && (
+                <button className="reset-button" onClick={handleResetGame}>
+                  New Game
                 </button>
-              </div>
+              )}
             </div>
-          )}
 
-          {/* Game status */}
-          <div className="status">
-            {gameMode === 'online' ? getOnlineStatus() : getStatus()}
-          </div>
-
-          {/* Online game info */}
-          {gameMode === 'online' && getOnlineGameInfo()}
-
-          {/* Game board */}
-          {gameMode === 'online' && onlineGameState ? (
-            <Board 
-              squares={onlineGameState.squares}
-              onClick={handleClick}
-            />
-          ) : (
-            <Board 
-              squares={squares}
-              onClick={handleClick}
-            />
-          )}
-        </div>
-
-        {/* Right Sidebar - Stats */}
-        <div className="game-sidebar-right">
-          {/* Stats board */}
-          <div className="stats-board">
-            <h2>Game Statistics</h2>
-            {gameMode === 'online' && onlineGameState ? (
-              <div className="stats-container">
-                <div className="stat-item">
-                  <span className="stat-label">Player X Wins:</span>
-                  <span className="stat-value">{onlineGameState.stats.xWins}</span>
+            {/* Stats board */}
+            <div className="stats-board">
+              <h2>Game Statistics</h2>
+              {gameMode === 'online' && onlineGameState ? (
+                <div className="stats-container">
+                  <div className="stat-item">
+                    <span className="stat-label">Player X Wins:</span>
+                    <span className="stat-value">{onlineGameState.stats.xWins}</span>
+                  </div>
+                  <div className="stat-item">
+                    <span className="stat-label">Player O Wins:</span>
+                    <span className="stat-value">{onlineGameState.stats.oWins}</span>
+                  </div>
+                  <div className="stat-item">
+                    <span className="stat-label">Draws:</span>
+                    <span className="stat-value">{onlineGameState.stats.draws}</span>
+                  </div>
                 </div>
-                <div className="stat-item">
-                  <span className="stat-label">Player O Wins:</span>
-                  <span className="stat-value">{onlineGameState.stats.oWins}</span>
+              ) : (
+                <div className="stats-container">
+                  <div className="stat-item">
+                    <span className="stat-label">{vsComputer ? 'Your Wins:' : 'Player X Wins:'}</span>
+                    <span className="stat-value">{stats.xWins}</span>
+                  </div>
+                  <div className="stat-item">
+                    <span className="stat-label">{vsComputer ? 'Computer Wins:' : 'Player O Wins:'}</span>
+                    <span className="stat-value">{stats.oWins}</span>
+                  </div>
+                  <div className="stat-item">
+                    <span className="stat-label">Draws:</span>
+                    <span className="stat-value">{stats.draws}</span>
+                  </div>
                 </div>
-                <div className="stat-item">
-                  <span className="stat-label">Draws:</span>
-                  <span className="stat-value">{onlineGameState.stats.draws}</span>
-                </div>
-              </div>
-            ) : (
-              <div className="stats-container">
-                <div className="stat-item">
-                  <span className="stat-label">{vsComputer ? 'Your Wins:' : 'Player X Wins:'}</span>
-                  <span className="stat-value">{stats.xWins}</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-label">{vsComputer ? 'Computer Wins:' : 'Player O Wins:'}</span>
-                  <span className="stat-value">{stats.oWins}</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-label">Draws:</span>
-                  <span className="stat-value">{stats.draws}</span>
-                </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </header>

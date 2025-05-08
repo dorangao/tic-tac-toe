@@ -6,36 +6,51 @@
   margin: 20px;
 }
 
-/* Board styles */
+/* Board styles - Using CSS Grid for scaling */
 .board {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: linear-gradient(135deg, #1a2a3a 0%, #0d1520 100%);
+  display: grid;
+  grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+  width: 100%;
+  height: 100%;
+  max-width: 600px;
+  max-height: 600px;
+  gap: 10px;
+  background: #1f2530;
   padding: 15px;
-  border-radius: 10px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.6), inset 0 -2px 8px rgba(255,255,255,0.05);
   margin: 20px 0;
-  max-width: 100%;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Row styles */
+/* Add a subtle celebration effect when game is won */
+.winner .board {
+  animation: celebrate 1s ease-in-out;
+  box-shadow: 0 8px 20px rgba(76, 175, 80, 0.4), inset 0 -2px 8px rgba(255,255,255,0.1);
+}
+
+@keyframes celebrate {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+
+/* Row styles - No longer needed with CSS Grid */
 .boardRow {
-  display: flex;
-  flex-direction: row;
+  display: contents;
 }
 
 /* Square button styles */
 .square {
-  width: 80px;
-  height: 80px;
+  aspect-ratio: 1;
+  width: 100%;
+  height: 100%;
   background-color: rgba(255, 255, 255, 0.05);
   border: 2px solid #61dafb;
   border-radius: 8px;
-  font-size: 36px;
+  font-size: 4rem;
   font-weight: bold;
   color: #fff;
-  margin: 5px;
   padding: 0;
   text-align: center;
   cursor: pointer;
@@ -50,7 +65,8 @@
 .square:hover {
   background-color: rgba(97, 218, 251, 0.2);
   transform: scale(1.05);
-  box-shadow: 0 0 15px rgba(97, 218, 251, 0.5);
+  box-shadow: 0 0 8px rgba(0, 200, 255, 0.6);
+  transition: box-shadow 150ms ease-in-out;
 }
 
 .square:focus {
@@ -73,17 +89,42 @@
   opacity: 1;
 }
 
-/* X and O animations */
+/* X and O animations - Enhanced with micro-interactions */
 .square[value="X"], .square[value="O"] {
   animation: pop-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
 }
 
 .square[value="X"] {
   color: #ff6b6b;
 }
 
+.square[value="X"]::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, rgba(255, 107, 107, 0.2) 0%, transparent 70%);
+  border-radius: 8px;
+  animation: pulse-x 2s infinite ease-in-out;
+}
+
 .square[value="O"] {
   color: #61dafb;
+}
+
+.square[value="O"]::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, rgba(97, 218, 251, 0.2) 0%, transparent 70%);
+  border-radius: 8px;
+  animation: pulse-o 2s infinite ease-in-out;
 }
 
 @keyframes pop-in {
@@ -91,10 +132,25 @@
     transform: scale(0.5);
     opacity: 0;
   }
+  75% {
+    transform: scale(1.1);
+  }
   100% {
     transform: scale(1);
     opacity: 1;
   }
+}
+
+@keyframes pulse-x {
+  0% { opacity: 0.3; }
+  50% { opacity: 0.7; }
+  100% { opacity: 0.3; }
+}
+
+@keyframes pulse-o {
+  0% { opacity: 0.3; }
+  50% { opacity: 0.7; }
+  100% { opacity: 0.3; }
 }
 
 /* Status message styles */
