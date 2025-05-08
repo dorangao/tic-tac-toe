@@ -10,6 +10,8 @@ export interface GameState {
   players: {
     x: string | null;
     o: string | null;
+    xDisplayName: string | null;
+    oDisplayName: string | null;
   };
   stats: {
     xWins: number;
@@ -27,6 +29,8 @@ const initialGameState: GameState = {
   players: {
     x: null,
     o: null,
+    xDisplayName: null,
+    oDisplayName: null,
   },
   stats: {
     xWins: 0,
@@ -46,7 +50,7 @@ export const generatePlayerId = (): string => {
 };
 
 // Create a new game session
-export const createGame = async (playerId: string): Promise<string> => {
+export const createGame = async (playerId: string, displayName?: string): Promise<string> => {
   try {
     if (!playerId) {
       throw new Error("Player ID is required");
@@ -75,6 +79,8 @@ export const createGame = async (playerId: string): Promise<string> => {
       players: {
         x: playerId, // Creator is player X
         o: null,
+        xDisplayName: displayName || "Player X", // Use provided display name or default
+        oDisplayName: null,
       },
       stats: {
         xWins: 0,
@@ -103,7 +109,7 @@ export const createGame = async (playerId: string): Promise<string> => {
 };
 
 // Join an existing game
-export const joinGame = async (gameId: string, playerId: string): Promise<boolean> => {
+export const joinGame = async (gameId: string, playerId: string, displayName?: string): Promise<boolean> => {
   try {
     if (!gameId) {
       throw new Error("Game ID is required");
@@ -164,9 +170,10 @@ export const joinGame = async (gameId: string, playerId: string): Promise<boolea
     if (gameState.players.o === null || gameState.players.o === undefined) {
       console.log(`Player ${playerId} is joining as player O`);
       // Join as player O
-      // Prepare updates object with player O
+      // Prepare updates object with player O and display name
       const updates: any = {
         'players/o': playerId,
+        'players/oDisplayName': displayName || "Player O", // Use provided display name or default
       };
 
       // Check if squares property is missing, not an array, or doesn't have 9 elements
@@ -280,7 +287,7 @@ export const makeMove = async (gameId: string, playerId: string, index: number):
     // Initialize missing properties if needed
     if (!gameState.players) {
       console.warn(`Game state for game ${gameId} is missing players property, initializing it`);
-      gameState.players = { x: null, o: null };
+      gameState.players = { x: null, o: null, xDisplayName: null, oDisplayName: null };
     }
 
     if (!gameState.squares || !Array.isArray(gameState.squares) || gameState.squares.length !== 9) {
@@ -476,7 +483,7 @@ export const resetGame = async (gameId: string, playerId: string): Promise<boole
     // Initialize missing properties if needed
     if (!gameState.players) {
       console.warn(`Game state for game ${gameId} is missing players property, initializing it`);
-      gameState.players = { x: null, o: null };
+      gameState.players = { x: null, o: null, xDisplayName: null, oDisplayName: null };
     }
 
     // Ensure the squares array is properly initialized
@@ -576,7 +583,7 @@ export const onGameStateChanged = (gameId: string, callback: (gameState: GameSta
         // Initialize missing properties if needed
         if (!gameState.players) {
           console.warn(`Game state for game ${gameId} is missing players property, initializing it`);
-          gameState.players = { x: null, o: null };
+          gameState.players = { x: null, o: null, xDisplayName: null, oDisplayName: null };
         }
 
         if (!gameState.squares || !Array.isArray(gameState.squares) || gameState.squares.length !== 9) {

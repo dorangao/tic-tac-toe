@@ -264,6 +264,19 @@
     margin-bottom: 15px;
   }
 
+  /* Mobile stats board - positioned at the top */
+  .mobileStatsBoard {
+    order: -2; /* Position above status */
+    width: 100%;
+    margin: 10px 0;
+    padding: 15px;
+    box-sizing: border-box;
+    background-color: rgba(97, 218, 251, 0.05);
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(97, 218, 251, 0.2);
+  }
+
   /* Game title */
   .gameTitle {
     font-size: 1.8rem;

@@ -145,6 +145,7 @@ function App() {
     const [joinGameId, setJoinGameId] = useState<string>('');
     const [inviteLink, setInviteLink] = useState<string>('');
     const [isLinkCopied, setIsLinkCopied] = useState<boolean>(false);
+    const [displayName, setDisplayName] = useState<string>('');
 
     // Local game state (used for local games)
     const [squares, setSquares] = useState<Array<string | null>>(Array(9).fill(null));
@@ -259,7 +260,8 @@ function App() {
         try {
             console.log(`Creating new online game for player: ${playerId}`);
             console.log(`This tab's unique player ID: ${sessionStorage.getItem('sessionPlayerId')}`);
-            const newGameId = await createGame(playerId);
+            console.log(`Using display name: ${displayName || "Player X"}`);
+            const newGameId = await createGame(playerId, displayName);
 
             console.log(`Game created with ID: ${newGameId}`);
             setGameId(newGameId);
@@ -321,7 +323,8 @@ function App() {
 
             console.log(`Attempting to join game with ID: ${trimmedId} as player: ${playerId}`);
             console.log(`This tab's unique player ID: ${sessionStorage.getItem('sessionPlayerId')}`);
-            const success = await joinGame(trimmedId, playerId);
+            console.log(`Using display name: ${displayName || "Player O"}`);
+            const success = await joinGame(trimmedId, playerId, displayName);
 
             if (success) {
                 console.log(`Successfully joined game with ID: ${trimmedId}`);
@@ -502,15 +505,16 @@ function App() {
 
         if (winner) {
             if (winner === playerSymbol) {
-                return `Winner: You (${playerSymbol})`;
+                return `Winner: ${isPlayerX ? (displayName || 'You') : (isPlayerO ? (displayName || 'You') : 'You')} (${playerSymbol})`;
             } else {
-                return `Winner: Opponent (${winner})`;
+                const opponentName = winner === 'X' ? (players.xDisplayName || 'Opponent') : (players.oDisplayName || 'Opponent');
+                return `Winner: ${opponentName} (${winner})`;
             }
         } else if (gameOver) {
             return 'Game ended in a draw!';
         } else if (!players.o) {
             if (isPlayerX) {
-                return `Waiting for opponent to join... You are Player X (host)`;
+                return `Waiting for opponent to join... You are ${displayName || 'Player X'} (host)`;
             } else {
                 return `Waiting for Player O to join... You are observing`;
             }
@@ -518,21 +522,27 @@ function App() {
             // Game has both players
             if (isPlayerX) {
                 const isYourTurn = xIsNext;
+                const yourName = displayName || 'Your';
+                const opponentName = players.oDisplayName || 'Opponent';
                 if (isYourTurn) {
-                    return `Your turn (Player X - host)`;
+                    return `${yourName}'s turn (Player X - host)`;
                 } else {
-                    return `Opponent's turn (Player O - joiner)`;
+                    return `${opponentName}'s turn (Player O - joiner)`;
                 }
             } else if (isPlayerO) {
                 const isYourTurn = !xIsNext;
+                const yourName = displayName || 'Your';
+                const opponentName = players.xDisplayName || 'Opponent';
                 if (isYourTurn) {
-                    return `Your turn (Player O - joiner)`;
+                    return `${yourName}'s turn (Player O - joiner)`;
                 } else {
-                    return `Opponent's turn (Player X - host)`;
+                    return `${opponentName}'s turn (Player X - host)`;
                 }
             } else {
                 // Observer
-                return `Observing game: ${xIsNext ? 'Player X' : 'Player O'}'s turn`;
+                const playerXName = players.xDisplayName || 'Player X';
+                const playerOName = players.oDisplayName || 'Player O';
+                return `Observing game: ${xIsNext ? playerXName : playerOName}'s turn`;
             }
         }
     };
@@ -576,13 +586,13 @@ function App() {
                     <div className="player-x">
                         <span className="player-label">Player X (Host):</span>
                         <span className="player-value">
-              {isPlayerX ? 'You' : (players.x ? 'Opponent' : 'Waiting...')}
+              {isPlayerX ? (displayName || 'You') : (players.xDisplayName || (players.x ? 'Opponent' : 'Waiting...'))}
             </span>
                     </div>
                     <div className="player-o">
                         <span className="player-label">Player O (Joiner):</span>
                         <span className="player-value">
-              {isPlayerO ? 'You' : (players.o ? 'Opponent' : 'Waiting...')}
+              {isPlayerO ? (displayName || 'You') : (players.oDisplayName || (players.o ? 'Opponent' : 'Waiting...'))}
             </span>
                     </div>
                 </div>
@@ -590,21 +600,21 @@ function App() {
                 {/* Message for player X when waiting for opponent */}
                 {!players.o && isCreator && (
                     <div className="waiting-message">
-                        Share the Game ID or invite link with a friend to play together!
+                        {displayName || "You"} created the game! Share the Game ID or invite link with a friend to play together!
                     </div>
                 )}
 
                 {/* Message for player O when they've joined */}
                 {players.o && isPlayerO && (
                     <div className="joined-message">
-                        You've joined as Player O! Wait for Player X to make the first move.
+                        {displayName || "You"} joined as Player O! Wait for {players.xDisplayName || "Player X"} to make the first move.
                     </div>
                 )}
 
                 {/* Message for player X when player O has joined */}
                 {players.o && isPlayerX && (
                     <div className="joined-message">
-                        Player O has joined! You go first as Player X.
+                        {players.oDisplayName || "Player O"} has joined! {displayName || "You"} go first as Player X.
                     </div>
                 )}
             </div>
@@ -696,6 +706,13 @@ function App() {
                                         placeholder="Enter Game ID"
                                         className="join-input"
                                     />
+                                    <input
+                                        type="text"
+                                        value={displayName}
+                                        onChange={(e) => setDisplayName(e.target.value)}
+                                        placeholder="Enter your display name"
+                                        className="join-input"
+                                    />
                                     <div className="join-buttons">
                                         <button
                                             className="join-button"
@@ -717,10 +734,46 @@ function App() {
                             {gameMode === 'online' && onlineGameState?.players.o && (
                                 <div className={mobileStyles.joinedPill}>
                                     {onlineGameState.players.o === playerId
-                                        ? "You've joined as Player O!"
-                                        : "Player O has joined!"}
+                                        ? `${displayName || "You"} joined as Player O!`
+                                        : `${onlineGameState.players.oDisplayName || "Player O"} has joined!`}
                                 </div>
                             )}
+
+                            {/* Mobile stats board */}
+                            <div className={mobileStyles.mobileStatsBoard}>
+                                <h2>Game Statistics</h2>
+                                {gameMode === 'online' && onlineGameState ? (
+                                    <div className="stats-container">
+                                        <div className="stat-item">
+                                            <span className="stat-label">Player X Wins:</span>
+                                            <span className="stat-value">{onlineGameState.stats.xWins}</span>
+                                        </div>
+                                        <div className="stat-item">
+                                            <span className="stat-label">Player O Wins:</span>
+                                            <span className="stat-value">{onlineGameState.stats.oWins}</span>
+                                        </div>
+                                        <div className="stat-item">
+                                            <span className="stat-label">Draws:</span>
+                                            <span className="stat-value">{onlineGameState.stats.draws}</span>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="stats-container">
+                                        <div className="stat-item">
+                                            <span className="stat-label">Your Wins:</span>
+                                            <span className="stat-value">{stats.xWins}</span>
+                                        </div>
+                                        <div className="stat-item">
+                                            <span className="stat-label">Computer Wins:</span>
+                                            <span className="stat-value">{stats.oWins}</span>
+                                        </div>
+                                        <div className="stat-item">
+                                            <span className="stat-label">Draws:</span>
+                                            <span className="stat-value">{stats.draws}</span>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
 
                             {/* Game status */}
                             <div className={`status ${mobileStyles.status} ${
@@ -821,6 +874,17 @@ function App() {
                                 <div className="game-mode-selector">
                                     <div className="mode-label">
                                         Current Mode: Human vs Computer
+                                    </div>
+                                    <div className="display-name-container">
+                                        <label htmlFor="display-name">Your Display Name:</label>
+                                        <input
+                                            type="text"
+                                            id="display-name"
+                                            value={displayName}
+                                            onChange={(e) => setDisplayName(e.target.value)}
+                                            placeholder="Enter your name"
+                                            className="display-name-input"
+                                        />
                                     </div>
                                     <button
                                         className="mode-button"
