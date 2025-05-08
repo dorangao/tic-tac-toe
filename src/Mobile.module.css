@@ -1,0 +1,294 @@
+/* Mobile-specific styles for Tic Tac Toe game */
+
+/* Apply safe area insets for notches/home indicators */
+.mobileContainer {
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+/* Mobile styles - Apply these styles only on mobile devices */
+@media (max-width: 768px) {
+  /* True vertical flow */
+  .container {
+    flex-direction: column;
+    height: 100vh;
+    width: 100%;
+    padding: 0;
+    position: relative;
+  }
+
+  /* Make board wrapper take full width and center vertically */
+  .boardWrapper {
+    width: 100%;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Changed from center to allow content to start from the top */
+    padding: 10px;
+    box-sizing: border-box;
+    overflow-y: auto; /* Added to allow vertical scrolling */
+    max-height: 85vh; /* Added to ensure the container has a maximum height */
+  }
+
+  /* Scale board to fit full width with square aspect ratio */
+  .gameMain {
+    width: 100%;
+    max-width: 100vw;
+    padding: 10px;
+    margin: 0;
+    box-sizing: border-box;
+    position: relative;
+    overflow-y: auto; /* Added to allow vertical scrolling */
+    max-height: 80vh; /* Added to ensure the container has a maximum height */
+  }
+
+  /* Ensure board maintains square aspect ratio */
+  .board {
+    width: 100%;
+    aspect-ratio: 1/1;
+    max-width: none;
+    max-height: none;
+    margin: 0 auto;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4), inset 0 -2px 8px rgba(255, 255, 255, 0.1);
+    background: radial-gradient(circle at center, #2a3a4a 0%, #1f2530 100%);
+  }
+
+  /* Increase square size for better touch targets */
+  .square {
+    font-size: 3rem;
+    border-width: 3px;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+  }
+
+  /* Active state for touch */
+  .square:active {
+    transform: scale(0.95);
+    background-color: rgba(97, 218, 251, 0.3);
+  }
+
+  /* Hide sidebar on mobile */
+  .sidebar {
+    display: none;
+  }
+
+  /* Floating action buttons */
+  .fabContainer {
+    position: fixed;
+    bottom: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+    box-sizing: border-box;
+    z-index: 100;
+  }
+
+  .fab {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background-color: #61dafb;
+    color: #282c34;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .fab:active {
+    transform: scale(0.9);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .fabLeft {
+    left: 20px;
+  }
+
+  .fabRight {
+    right: 20px;
+  }
+
+  /* Game ID link icon */
+  .gameIdLink {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: rgba(97, 218, 251, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .gameIdLink:active {
+    background-color: rgba(97, 218, 251, 0.4);
+  }
+
+  /* Game ID bottom sheet */
+  .gameIdSheet {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #282c34;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.3);
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+    z-index: 1000;
+    box-sizing: border-box;
+  }
+
+  .gameIdSheetVisible {
+    transform: translateY(0);
+  }
+
+  .gameIdSheetHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+
+  .gameIdSheetTitle {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #61dafb;
+  }
+
+  .gameIdSheetClose {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+
+  .gameIdValue {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 12px;
+    border-radius: 8px;
+    font-family: monospace;
+    font-size: 1rem;
+    text-align: center;
+    margin-bottom: 15px;
+    word-break: break-all;
+  }
+
+  .copyButton {
+    width: 100%;
+    padding: 12px;
+    background-color: #61dafb;
+    color: #282c34;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  /* Slim color-coded pill for joined message */
+  .joinedPill {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 6px 12px;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+    white-space: nowrap;
+    max-width: 90%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Winner announcement overlay */
+  .winnerOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .winnerOverlayVisible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .winnerMessage {
+    font-size: 2rem;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    background-color: rgba(76, 175, 80, 0.8);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    animation: pulse 2s infinite ease-in-out;
+  }
+
+  /* Status message - moved to top */
+  .status {
+    font-size: 1.2rem;
+    margin: 10px 0;
+    text-align: center;
+    order: -1; /* Move to the top */
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    background-color: rgba(97, 218, 251, 0.1);
+    border-radius: 8px;
+    margin-bottom: 15px;
+  }
+
+  /* Game title */
+  .gameTitle {
+    font-size: 1.8rem;
+    margin: 10px 0;
+  }
+
+  /* Online game info - moved to bottom for mobile */
+  .mobileOnlineInfo {
+    order: 2; /* Move after the board */
+    width: 100%;
+    margin-top: 15px;
+    padding: 10px;
+    box-sizing: border-box;
+    background-color: rgba(97, 218, 251, 0.1);
+    border-radius: 8px;
+    font-size: 0.9rem;
+  }
+
+  /* Ensure the game board is fully visible */
+  .gameBoard {
+    order: 1; /* Place between status and online info */
+    width: 100%;
+    max-width: 100%;
+    max-height: none; /* Removed height limit to allow full content to be displayed */
+    margin: 0 auto;
+    padding: 0;
+  }
+}

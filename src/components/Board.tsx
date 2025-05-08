@@ -4,13 +4,14 @@ import styles from '../Game.module.css';
 interface SquareProps {
   value: string | null;
   onClick: () => void;
+  mobileStyles?: any; // Optional mobile styles
 }
 
 // Square component for individual buttons in the grid
-const Square: React.FC<SquareProps> = ({ value, onClick }) => {
+const Square: React.FC<SquareProps> = ({ value, onClick, mobileStyles }) => {
   return (
     <button 
-      className={styles.square} 
+      className={`${styles.square} ${mobileStyles?.square || ''}`} 
       onClick={onClick}
       value={value || undefined} // This allows CSS to target [value="X"] and [value="O"]
     >
@@ -22,15 +23,17 @@ const Square: React.FC<SquareProps> = ({ value, onClick }) => {
 interface BoardProps {
   squares: Array<string | null>;
   onClick: (index: number) => void;
+  mobileStyles?: any; // Optional mobile styles
 }
 
-const Board: React.FC<BoardProps> = ({ squares, onClick }) => {
+const Board: React.FC<BoardProps> = ({ squares, onClick, mobileStyles }) => {
   // Render a square with its value and click handler
   const renderSquare = (index: number) => {
     return (
       <Square 
         value={squares && squares[index] ? squares[index] : null} 
         onClick={() => onClick(index)} 
+        mobileStyles={mobileStyles}
       />
     );
   };

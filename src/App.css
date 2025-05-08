@@ -140,7 +140,7 @@
   justify-content: center;
   margin: 20px 0;
   position: relative;
-  overflow: hidden;
+  overflow-y: auto; /* Changed from overflow: hidden to allow vertical scrolling */
   width: 100%;
   height: 100%;
 }
@@ -561,6 +561,20 @@
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   border: 1px solid rgba(97, 218, 251, 0.2);
+  margin-bottom: 20px;
+}
+
+/* Desktop online info styles */
+.desktop-online-info {
+  padding: 20px;
+  background-color: rgba(97, 218, 251, 0.05);
+  border-radius: 10px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid rgba(97, 218, 251, 0.2);
+  margin-top: 20px;
 }
 
 .stats-board:hover {
