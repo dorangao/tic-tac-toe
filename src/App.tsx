@@ -258,6 +258,7 @@ function App() {
     // Create a new online game
     const createOnlineGame = async () => {
         try {
+            setGameOver(false);
             console.log(`Creating new online game for player: ${playerId}`);
             console.log(`This tab's unique player ID: ${sessionStorage.getItem('sessionPlayerId')}`);
             console.log(`Using display name: ${displayName || "Player X"}`);
@@ -657,46 +658,6 @@ function App() {
                                 </div>
                             )}
 
-                            {/* Game ID bottom sheet for mobile */}
-                            {gameMode === 'online' && gameId && (
-                                <div
-                                    className={`${mobileStyles.gameIdSheet} ${isGameIdSheetVisible ? mobileStyles.gameIdSheetVisible : ''}`}>
-                                    <div className={mobileStyles.gameIdSheetHeader}>
-                                        <div className={mobileStyles.gameIdSheetTitle}>Game ID</div>
-                                        <button
-                                            className={mobileStyles.gameIdSheetClose}
-                                            onClick={() => setIsGameIdSheetVisible(false)}
-                                        >
-                                            ✕
-                                        </button>
-                                    </div>
-                                    <div className={mobileStyles.gameIdValue}>{gameId}</div>
-                                    <button
-                                        className={mobileStyles.copyButton}
-                                        onClick={() => {
-                                            navigator.clipboard.writeText(gameId);
-
-                                            // Create notification
-                                            const notification = document.createElement('div');
-                                            notification.className = 'game-notification join-notification';
-                                            notification.textContent = 'Game ID copied to clipboard!';
-                                            document.querySelector('.game-main')?.appendChild(notification);
-
-                                            // Remove notification after 2 seconds
-                                            setTimeout(() => {
-                                                notification.classList.add('fade-out');
-                                                setTimeout(() => notification.remove(), 500);
-                                            }, 2000);
-
-                                            // Hide sheet after copying
-                                            setIsGameIdSheetVisible(false);
-                                        }}
-                                    >
-                                        Copy Game ID
-                                    </button>
-                                </div>
-                            )}
-
                             {/* Join game dialog */}
                             {isJoining && (
                                 <div className="join-dialog">
@@ -729,15 +690,6 @@ function App() {
                                             Cancel
                                         </button>
                                     </div>
-                                </div>
-                            )}
-
-                            {/* Joined message as slim pill for mobile */}
-                            {gameMode === 'online' && onlineGameState?.players.o && (
-                                <div className={mobileStyles.joinedPill}>
-                                    {onlineGameState.players.o === playerId
-                                        ? `${displayName || "You"} joined as Player O!`
-                                        : `${onlineGameState.players.oDisplayName || "Player O"} has joined!`}
                                 </div>
                             )}
 
