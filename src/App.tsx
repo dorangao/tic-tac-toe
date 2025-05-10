@@ -600,14 +600,16 @@ function App() {
                 {/* Message for player X when waiting for opponent */}
                 {!players.o && isCreator && (
                     <div className="waiting-message">
-                        {displayName || "You"} created the game! Share the Game ID or invite link with a friend to play together!
+                        {displayName || "You"} created the game! Share the Game ID or invite link with a friend to play
+                        together!
                     </div>
                 )}
 
                 {/* Message for player O when they've joined */}
                 {players.o && isPlayerO && (
                     <div className="joined-message">
-                        {displayName || "You"} joined as Player O! Wait for {players.xDisplayName || "Player X"} to make the first move.
+                        {displayName || "You"} joined as Player O! Wait for {players.xDisplayName || "Player X"} to make
+                        the first move.
                     </div>
                 )}
 
@@ -739,42 +741,6 @@ function App() {
                                 </div>
                             )}
 
-                            {/* Mobile stats board */}
-                            <div className={mobileStyles.mobileStatsBoard}>
-                                <h2>Game Statistics</h2>
-                                {gameMode === 'online' && onlineGameState ? (
-                                    <div className="stats-container">
-                                        <div className="stat-item">
-                                            <span className="stat-label">Player X Wins:</span>
-                                            <span className="stat-value">{onlineGameState.stats.xWins}</span>
-                                        </div>
-                                        <div className="stat-item">
-                                            <span className="stat-label">Player O Wins:</span>
-                                            <span className="stat-value">{onlineGameState.stats.oWins}</span>
-                                        </div>
-                                        <div className="stat-item">
-                                            <span className="stat-label">Draws:</span>
-                                            <span className="stat-value">{onlineGameState.stats.draws}</span>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div className="stats-container">
-                                        <div className="stat-item">
-                                            <span className="stat-label">Your Wins:</span>
-                                            <span className="stat-value">{stats.xWins}</span>
-                                        </div>
-                                        <div className="stat-item">
-                                            <span className="stat-label">Computer Wins:</span>
-                                            <span className="stat-value">{stats.oWins}</span>
-                                        </div>
-                                        <div className="stat-item">
-                                            <span className="stat-label">Draws:</span>
-                                            <span className="stat-value">{stats.draws}</span>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-
                             {/* Game status */}
                             <div className={`status ${mobileStyles.status} ${
                                 (gameMode === 'online' && onlineGameState?.winner) ||
@@ -788,13 +754,15 @@ function App() {
                             <div
                                 className={`${mobileStyles.winnerOverlay} ${isWinnerOverlayVisible ? mobileStyles.winnerOverlayVisible : ''}`}>
                                 <div className={mobileStyles.winnerMessage}>
-                                    {gameMode === 'online' && onlineGameState?.winner
-                                        ? (onlineGameState.winner === (onlineGameState.players.x === playerId ? 'X' : 'O')
-                                            ? 'You Win!'
-                                            : 'Opponent Wins!')
-                                        : (calculateWinner(squares) === 'X'
-                                            ? 'You Win!'
-                                            : 'Computer Wins!')}
+                                    {gameOver && (
+                                        gameMode === 'online'
+                                            ? (onlineGameState?.winner === (onlineGameState?.players.x === playerId ? 'X' : 'O')
+                                                ? 'You Win!'
+                                                : 'Opponent Wins!')
+                                            : (calculateWinner(squares) === 'X'
+                                                ? 'You Win!'
+                                                : 'Computer Wins!')
+                                    )}
                                 </div>
                             </div>
 
